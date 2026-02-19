@@ -6,3 +6,4 @@ variable "rds-username" {}
 variable "rds-pwd" {}
 variable "db-name" {}
 variable "rds-name" {}
+variable "vpc_id {}
