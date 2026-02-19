@@ -1,44 +1,57 @@
-# 8 Creating DB subnet group for RDS Instances
+# -----------------------------
+# 1️⃣ DB Subnet Group
+# -----------------------------
 resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = var.sg-name
-  subnet_ids = [data.aws_subnet.private-subnet1.id, data.aws_subnet.private-subnet2.id]
-}
+  name       = var.db_subnet_group_name
+  subnet_ids = [var.private_subnet1, var.private_subnet2]
 
-
-# Creating Aurora RDS Cluster, username and password used only for practice, otherwise follow DevOps best practices to keep it secret
-resource "aws_rds_cluster" "aurora_cluster" {
-  cluster_identifier      = "aurora-cluster"
-  engine                  = "aurora-mysql"
-  engine_version          = "8.0.mysql_aurora.3.02.2"
-  master_username         = var.rds-username
-  master_password         = var.rds-pwd
-  backup_retention_period = 7
-  preferred_backup_window = "07:00-09:00"
-  skip_final_snapshot     = true
-  database_name           = var.db-name
-  port                    = 3306
-  db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
-  vpc_security_group_ids  = [data.aws_security_group.db-sg.id]
   tags = {
-    Name = var.rds-name
+    Name = var.db_subnet_group_name
   }
 }
 
-# Creating RDS Cluster instance
-resource "aws_rds_cluster_instance" "primary_instance" {
-  cluster_identifier = aws_rds_cluster.aurora_cluster.id
-  identifier         = "primary-instance"
-  instance_class     = "db.r5.large"
-  engine             = aws_rds_cluster.aurora_cluster.engine
-  engine_version     = aws_rds_cluster.aurora_cluster.engine_version
+# -----------------------------
+# 2️⃣ Aurora RDS Cluster
+# -----------------------------
+resource "aws_rds_cluster" "aurora_cluster" {
+  cluster_identifier      = var.cluster_identifier
+  engine                  = "aurora-mysql"
+  engine_version          = var.engine_version # Valid version: 8.0.mysql_aurora.3.12.0
+  master_username         = var.master_username
+  master_password         = var.master_password
+  backup_retention_period = 7
+  preferred_backup_window = "07:00-09:00"
+  skip_final_snapshot     = true
+  database_name           = var.database_name
+  port                    = 3306
+  db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
+  vpc_security_group_ids  = [var.db_sg_id]
+
+  tags = {
+    Name = var.cluster_identifier
+  }
 }
 
-# Creating RDS Read Replica Instance
-resource "aws_rds_cluster_instance" "read_replica_instance" {
-  count              = 1
+# -----------------------------
+# 3️⃣ Primary Cluster Instance
+# -----------------------------
+resource "aws_rds_cluster_instance" "primary_instance" {
   cluster_identifier = aws_rds_cluster.aurora_cluster.id
-  identifier         = "read-replica-instance-${count.index}"
-  instance_class     = "db.r5.large"
+  identifier         = "${var.cluster_identifier}-primary"
+  instance_class     = var.instance_class
+  engine             = aws_rds_cluster.aurora_cluster.engine
+  engine_version     = aws_rds_cluster.aurora_cluster.engine_version
+  publicly_accessible = false
+}
+
+# -----------------------------
+# 4️⃣ Read Replica Cluster Instance
+# -----------------------------
+resource "aws_rds_cluster_instance" "read_replica_instance" {
+  count              = var.read_replica_count
+  cluster_identifier = aws_rds_cluster.aurora_cluster.id
+  identifier         = "${var.cluster_identifier}-replica-${count.index}"
+  instance_class     = var.instance_class
   engine             = aws_rds_cluster.aurora_cluster.engine
 
   depends_on = [aws_rds_cluster_instance.primary_instance]
