@@ -17,4 +17,9 @@ data "aws_security_group" "db-sg" {
     name   = "tag:Name"
     values = [var.db-sg-name]
   }
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+}
+  most_recent = true
 }
