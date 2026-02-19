@@ -37,10 +37,9 @@ module "security-group" {
 module "rds" {
   source = "./modules/aws-rds"
 
-  sg-name              = var.SG-NAME
+  db_sg_id = module.security-group.db_sg_id
   private-subnet-name1 = var.PRIVATE-SUBNET1
   private-subnet-name2 = var.PRIVATE-SUBNET2
-  db-sg-name           = var.DB-SG-NAME
   rds-username         = var.RDS-USERNAME
   rds-pwd              = var.RDS-PWD
   db-name              = var.DB-NAME
