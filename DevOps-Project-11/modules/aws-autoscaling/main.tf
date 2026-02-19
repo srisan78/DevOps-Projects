@@ -6,7 +6,7 @@ resource "aws_launch_template" "Web-LC" {
 
   vpc_security_group_ids = [data.aws_security_group.web-sg.id]
 
-  user_data = filebase64("../modules/aws-autoscaling/deploy.sh")
+  user_data = filebase64("./modules/aws-autoscaling/deploy.sh")
 }
 
 
