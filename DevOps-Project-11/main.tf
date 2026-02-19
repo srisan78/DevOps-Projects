@@ -35,7 +35,7 @@ module "security-group" {
 }
 
 module "rds" {
-  source = "../modules/aws-rds"
+  source = "./modules/aws-rds"
 
   sg-name              = var.SG-NAME
   private-subnet-name1 = var.PRIVATE-SUBNET1
