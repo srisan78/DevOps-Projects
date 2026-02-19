@@ -24,7 +24,7 @@ module "vpc" {
 }
 
 module "security-group" {
-  source = "../modules/security-group"
+  source = "./modules/security-group"
 
   vpc-name    = var.VPC-NAME
   alb-sg-name = var.ALB-SG-NAME
