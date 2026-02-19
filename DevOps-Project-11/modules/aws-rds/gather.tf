@@ -12,7 +12,9 @@ data "aws_subnet" "private-subnet2" {
   }
 }
 
-variable "db_sg_id" {
-  description = "The security group ID for the RDS cluster"
-  type        = string
+data "aws_security_group" "db-sg" {
+  filter {
+    name   = "tag:Name"
+    values = [var.db-sg-name]
+  }
 }
