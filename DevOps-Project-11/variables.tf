@@ -25,7 +25,7 @@ variable "WEB-SG-NAME" {}
 variable "DB-SG-NAME" {}
 
 # RDS
-variable "db_sg_id" {}
+variable "SG-NAME" {}
 variable "RDS-USERNAME" {}
 variable "RDS-PWD" {}
 variable "DB-NAME" {}
