@@ -18,7 +18,7 @@ resource "aws_rds_cluster" "aurora_cluster" {
   database_name           = var.db-name
   port                    = 3306
   db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
-  vpc_security_group_ids  = [data.aws_security_group.db-sg.id]
+  vpc_security_group_ids  = [var.db_sg_id]
   tags = {
     Name = var.rds-name
   }
